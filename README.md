@@ -1,2 +1,30 @@
-# attribute_face_generation_with_proGANS
-My university thesis work in implementing conditional ProGANs to generate faces   
+# Conditional Pro GANs for Face Generation
+
+## Overview
+
+This repository contains the implementation of conditional Progressive GANs (Generative Adversarial Networks) for face generation. The model allows the generation of synthetic faces with specific attributes controlled during the training process.
+
+## Features
+
+- **Conditional Generation:** The model supports conditional face generation, allowing the control of various facial attributes such as age, gender, and emotion.
+
+- **Progressive Training:** Utilizes a progressive training approach to generate high-resolution faces in a step-by-step manner.
+
+- **Pytorch Implementation:** Implemented using PyTorch, a popular deep learning framework.
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3
+- PyTorch
+- see requirments.txt
+
+
+### Installation
+
+1. Clone this repository:
+   ```bash
+   git clone this repo
+   cd attribute_face_generation_with_proGANS
+2. Download the pretrained weights from (here)[https://drive.google.com/file/d/1V3_QJah43HnGWH7eWcJBYNkCRQLY1PUD/view?usp=sharing, https://drive.google.com/file/d/1b--M5pRrGgkqdwlygCXcz6ZriieKkRmC/view?usp=sharing]
