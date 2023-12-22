@@ -1,106 +1,58 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.responses import FileResponse
-from pydantic import BaseModel
-import torch
-from PIL import Image
-from model import Generator
-import config
-import random, os
-from torchvision.utils import save_image
-import time, json
+import torch, os
+from backend_utils import *
+from backend_schemas import *
+from db_crud import get_user_by_username, create_user
+from db_engine import SessionLocal, Base, engine
+from backend_config import config
 
+Base.metadata.create_all(bind=engine)
 
-def laod_generator(file_path, model):
-    model_state = torch.load(file_path, map_location=config.DEVICE)
-    model.load_state_dict(model_state["state_dict"])
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-gen = Generator(config.Z_DIM, config.IN_CHANNELS, config.ATTRIB_DIM, img_channels=config.CHANNELS_IMG).to(config.DEVICE)
-
-laod_generator("./generator-HQ-5.pth",gen)
-gen.eval()
-
-class label_vector(BaseModel):
-    attributes : list[float]
-
-
-def get_user_with_key(key):
-    with open("users.json", "r") as file:
-        users = json.load(file)["users"]
-    for user in users:
-        if key in user["api_keys"]:
-            return user
-    return None
-
-def get_user_with_username(uname):
-    with open("users.json", "r") as file:
-        users = json.load(file)["users"]
-    for user in users:
-        user_name = user["email"].split("@")[0]
-        if uname in user_name:
-            return user
-    return None
-
-
-
-def generate_image(gen, labels, lattent_vector, user):
-    curr_path = os.getcwd()
-    user_images_dir = os.path.join(curr_path, f"{user['email']}_generated_faces")
-    if not os.path.exists(user_images_dir):
-        os.mkdir(user_images_dir)
-    with torch.no_grad():
-        images = gen(lattent_vector, labels, 1.0, 5) * 0.5 + 0.5
-        image_path = os.path.join(user_images_dir, f"{time.time()}_face.png")
-    save_image(images,image_path)
-    return image_path
-    
-    
-def generate_image_with_key(key, num_img, labels):
-    user = get_user_with_key(key)
-    if user:
-        l_vector = torch.randn(num_img,config.Z_DIM,1,1)
-        img = generate_image(gen,labels,l_vector,user)
-        return img
-    else:
-        raise HTTPException(status_code=403, detail="unauthorizes")
-
-# generate_image_with_key("apikey1_user2")
-
-# with open("users.json", "r") as f:
-#     data = json.load(f)
-#     print(data)
-
-
-# class user(BaseModel):
-#     username: str
-#     password: str
-
-# class lattent_request(BaseModel):
-#     lattent_vector: list[float]
-
+db = get_db()
 app = FastAPI()
 
 
-# @app.post("/login")
-# async def login():
-#     pass
+@app.post("/api/v1/token", response_model=Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(db , form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Incorrect username or password", headers={"WWW-Authenticate": "Bearer"})
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer"}
 
+@app.post("/api/v1/add_user")
+async def add_user_to_db(user: UserOnSubmit, db: Session = Depends(get_db)):
+    userdb = user.copy()
+    userdb.password = hash_password(user.password)
+    user =  create_user(db, userdb)
+    os.mkdir(os.path.join(os.getcwd(), user.content_directory))
+    return user
+    
+    
+
+@app.get("/users/me/", response_model=UserBase)
+async def read_users_me(current_user: oauth2_scheme = Depends(get_current_user)):
+    return UserBase(username=current_user.username,email=current_user.email, full_name=current_user.full_name)
 
 @app.post("/api/v1/generate_photo")
-def generate(api_key: str, num_imgs: int, labels: label_vector):
-    labels = torch.tensor(labels.attributes, dtype=torch.float32)
-    print(labels.shape)
-    labels = labels.repeat((num_imgs,1))
-    print(labels)
+def generate(num_imgs: int, labels: label_vector, current_user: oauth2_scheme = Depends(get_current_user), db = Depends(get_db)):
+    labels = torch.tensor(labels.attributes, dtype=torch.float32).to(config.DEVICE)
     if num_imgs == 0:
         raise HTTPException(status_code=503, detail="cannot generate 0 images")
-    img_name =  generate_image_with_key(api_key, num_imgs, labels)
-    # with open(img_name,"rb") as img:
+    img_name =  generate_save_image(num_imgs, labels, current_user.username, db)
     return FileResponse(path=img_name,media_type="image/png")
     
 
-# @app.get("/get_img")
-# async def get_img(lattent_vec: lattent_request):
-#     pass
             
         
-
