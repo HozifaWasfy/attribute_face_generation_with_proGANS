@@ -20,6 +20,8 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 passwd_context = CryptContext(schemes=["bcrypt"],deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
+model_path = "generator-HQ-5.pth" if config.CHANNELS_IMG == 128 else "generator-HQ-5-final-4.pth"
+
 
 def load_generator(file_path, model):
     model_state = torch.load(file_path, map_location=config.DEVICE)
@@ -29,7 +31,7 @@ def load_generator(file_path, model):
 gen = Generator(
         config.Z_DIM, config.IN_CHANNELS,config.ATTRIB_DIM, img_channels=config.CHANNELS_IMG
     ).to(config.DEVICE)
-load_generator("generator-HQ-5.pth", gen)
+load_generator(model_path, gen)
 gen.eval()
 
 def hash_password(password_plain):

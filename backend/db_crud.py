@@ -25,6 +25,9 @@ def get_user_by_username(db: Session, username: str):
 
 def get_images_by_owner(db: Session, user_id: int):
     return db.query(Images).filter(Images.user_id == user_id).all()
+
+def get_image_by_id(db: Session, img_id: int):
+    return db.query(Images).filter(Images.id == img_id).first()
     
 def create_image(db: Session, image: ImageInDB, user_id: int):
     image_in_db = Images(
