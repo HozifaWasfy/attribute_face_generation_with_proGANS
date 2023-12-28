@@ -27,5 +27,5 @@ This repository contains the implementation of conditional Progressive GANs (Gen
    ```bash
    git clone this repo
    cd attribute_face_generation_with_proGANS
-2. Download the pretrained weights from [generator](https://drive.google.com/file/d/1V3_QJah43HnGWH7eWcJBYNkCRQLY1PUD/view?usp=sharing), [discriminator](https://drive.google.com/file/d/1b--M5pRrGgkqdwlygCXcz6ZriieKkRmC/view?usp=sharing)
+2. Download the pretrained weights from [generator](https://drive.google.com/file/d/1eR83o8quD2WBF3vHGfPqyLjF9YuDHp4m/view?usp=sharing), [discriminator](https://drive.google.com/file/d/1uuay6YHTibvdkBh7LBiDX064gWKrC5F1/view?usp=sharing)
 3. Explore the model with the test jupyter notebook
