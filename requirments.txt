@@ -1,0 +1,11 @@
+torchvision
+torch
+uvicorn
+fastapi
+sqlalchemy
+tensorboard
+psycopg2
+numpy
+pandas
+passlib[cryptography]
+jose
