@@ -10,9 +10,12 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from io import BytesIO
 from backend_config import config
-from model import Generator
 from backend_schemas import UserInDB, TokenData, ImageInDB
 from db_engine import SessionLocal
+import sys
+sys.path.append("..")
+from models.model import Generator
+
 
 
 SECRET_KEY = "83daa0256a2289b0fb23693bf1f6034d44396675749244721a2b20e896e11662"

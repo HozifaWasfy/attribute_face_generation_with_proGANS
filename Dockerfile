@@ -6,8 +6,8 @@ COPY . .
 
 RUN pip install --upgrade pip
 
-RUN pip install -r requirments.txt
+RUN pip install -r req-backend.txt
 
 EXPOSE 8000
 
-CMD [ "uvicorn", "backend/backend:app" ]
+CMD [ "python", "run_backend.py" ]

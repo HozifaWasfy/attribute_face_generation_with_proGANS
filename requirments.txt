@@ -7,5 +7,5 @@ tensorboard
 psycopg2
 numpy
 pandas
-passlib[cryptography]
-jose
+passlib[bcrypt]
+python-jose[cryptography]

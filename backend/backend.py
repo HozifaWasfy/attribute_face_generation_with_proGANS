@@ -1,11 +1,13 @@
 from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.responses import FileResponse
-import torch, os
-from backend_utils import *
+import torch, os, sys
+sys.path.append("..")
 from backend_schemas import *
 from db_crud import get_user_by_username, create_user, get_images_by_owner, get_image_by_id
 from db_engine import SessionLocal, Base, engine
 from backend_config import config
+from backend_utils import *
+import uvicorn
 
 Base.metadata.create_all(bind=engine)
 
@@ -17,6 +19,7 @@ def get_db():
         db.close()
 
 db = get_db()
+
 app = FastAPI()
 
 
@@ -86,6 +89,17 @@ def get_images(id: int,labels: label_vector, current_user: oauth2_scheme = Depen
     torch.save(attributes, os.path.join(content_dir, image.attributes))
     
     return FileResponse(path=img_name,media_type="image/png")
+
+
+
+
+def run_server():
+    uvicorn.run(
+        "app",
+        host="0.0.0.0",
+        port="8000",
+        reload=True
+    )
     
     
 

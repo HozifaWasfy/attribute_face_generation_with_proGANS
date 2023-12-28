@@ -13,7 +13,7 @@ from utils import (
     load_checkpoint,
     generate_examples,
 )
-from model import Discriminator, Generator
+from models.model import Discriminator, Generator
 from dataset import CelebA_dataset
 from math import log2
 from tqdm import tqdm

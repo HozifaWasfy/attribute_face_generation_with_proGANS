@@ -1,0 +1,6 @@
+python-jose[cryptography]
+psycopg2
+sqlalchemy
+passlib[bcrypt]
+torch
+torchvision

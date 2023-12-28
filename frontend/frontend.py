@@ -6,12 +6,19 @@ from io import BytesIO
 import json
 # api_key = os.environ["FACE_API_KEY"]
 
+USER_NAME = "hoz"
+PASSWORD = "password"
+def auth_user(username, password):
+    api_url = f"http://localhost:8000/api/v1/token"
+    data = {"username": username, "password": password}
+    response = requests.post(api_url, data=data, auth=requests.auth.HTTPBasicAuth(data["username"], data["password"]))
+    
 def get_image_from_api(key, labels, num_imgs):
-    api_url = f"http://localhost:8000/api/v1/generate_photo?api_key={key}&num_imgs={num_imgs}"
+    api_url = f"http://localhost:8000/api/v1/generate_photo?num_imgs={num_imgs}"
     load = json.dumps({
         "attributes": labels
     })
-    imgs = requests.post(api_url, data=load)
+    imgs = requests.post(api_url, data=load, )
     print(imgs.json)
     return BytesIO(imgs.content)
 
