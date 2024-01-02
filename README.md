@@ -4,6 +4,10 @@
 
 This repository contains the implementation of conditional Progressive GANs (Generative Adversarial Networks) for face generation. The model allows the generation of synthetic faces with specific attributes controlled during the training process.
 
+## Results 
+
+![Faces with different features](https://github.com/HozifaWasfy/attribute_face_generation_with_proGANS/blob/main/imgs/sample_results.png?raw=true)
+
 ## Features
 
 - **Conditional Generation:** The model supports conditional face generation, allowing the control of various facial attributes such as age, gender and various face features.
@@ -29,3 +33,4 @@ This repository contains the implementation of conditional Progressive GANs (Gen
    cd attribute_face_generation_with_proGANS
 2. Download the pretrained weights from [generator](https://drive.google.com/file/d/1eR83o8quD2WBF3vHGfPqyLjF9YuDHp4m/view?usp=sharing), [discriminator](https://drive.google.com/file/d/1uuay6YHTibvdkBh7LBiDX064gWKrC5F1/view?usp=sharing)
 3. Explore the model with the test jupyter notebook
+
